@@ -5,7 +5,11 @@ from django.contrib import messages
 
 # Create your views here.
 def home(request):
-    return render(request, "shop/index.html")
+    products = Product.objects.filter(trending=1)
+    context = {
+        "products" : products
+   }
+    return render(request, "shop/index.html", context)
 def register(request):
     return render(request, "shop/register.html")
 def collections(request):
