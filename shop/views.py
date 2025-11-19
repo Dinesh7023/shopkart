@@ -2,6 +2,7 @@ from http.client import HTTPResponse
 from django.shortcuts import redirect, render
 from . models import *
 from django.contrib import messages
+from shop.form import CustomUserForm
 
 # Create your views here.
 def home(request):
@@ -10,8 +11,23 @@ def home(request):
         "products" : products
    }
     return render(request, "shop/index.html", context)
+
+def login(request):
+    return render(request,"shop/login.html")
+
 def register(request):
-    return render(request, "shop/register.html")
+    form=CustomUserForm()
+    if request.method=='POST':
+        form=CustomUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Registration Success You Can Login Now..!")
+            return redirect('/Login')
+    context = {
+        'form' : form
+    }
+    return render(request, "shop/register.html",context)
+
 def collections(request):
     category = Category.objects.filter(status = 0)
     return render(request, "shop/collections.html", {"category":category})
