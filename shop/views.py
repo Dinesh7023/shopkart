@@ -22,7 +22,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request,"Registration Success You Can Login Now..!")
-            return redirect('/Login')
+            return redirect('/login')
     context = {
         'form' : form
     }
