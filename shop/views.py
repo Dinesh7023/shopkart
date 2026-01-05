@@ -33,25 +33,25 @@ def login_page(request):
         return render(request,"shop/login.html")
     
 def add_to_cart(request):
-    if request.headers.get('x-requested-with')=='XMLHttpRequest':
+    if request.headers.get('x-Requested-with')=='XMLHttpRequest':
         if request.user.is_authenticated:
-            data = json.load(request)
+            data = json.loads(request.body)
             product_qty = data['product_qty']
             product_id = data['pid']
             # print(request.user.id)
             product_status = Product.objects.get(id=product_id)
             if product_status:
-                if Cart.objects.filter(user=request.user.id, products_id = product_id):
+                if Cart.objects.filter(user=request.user, product_id = product_id):
                     return JsonResponse({'status':'Product Already in Cart'}, status=200)
                 else:
                     if product_status.quantity>=product_qty:
-                        Cart.objects.create(user=request.user.id, product_id=product_id, product_qty=product_qty)
+                        Cart.objects.create(user=request.user, product_id=product_id, product_qty=product_qty)
                         return JsonResponse({'status':'Product Added in Cart'}, status=200)
                     else:
                         return JsonResponse({'status':'Product Stock Not Available'}, status=200)            
         else:
             return JsonResponse({'status': 'Login to Add Cart'}, status=200)
-    else:
+    else: 
         return JsonResponse({'status':'Invalid Access'}, status=200)
     
 def logout_page(request):
