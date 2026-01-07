@@ -33,7 +33,7 @@ Shopkart | Online shopping
                 <h5 class="my-2 text-primary">Offer Price : Rs.{{products.selling_price}}</h5>
                 <div class="my-3">
                     {% if products.quantity > 0 %}
-                    <input type="hidden" value="{products.id}" id="pid">
+                    <input type="hidden" value="{{products.id}}" id="pid">
                     <p>
                     <div class="input-group" style="width: 150px;">
                         <button class="input-group-text bg-success text-light" id="btnMinus"><i
@@ -48,7 +48,7 @@ Shopkart | Online shopping
                     {% else %}
                     <button class="btn btn-secondary"><i class="fa fa-minus"></i> Out of Stock</button>
                     {% endif %}
-                    <button class="btn btn-danger"><i class="fa fa-heart"></i></button>
+                    <button class="btn btn-danger" id="btnFav"><i class="fa fa-heart"></i></button>
                 </div>
             </div>
 
@@ -62,6 +62,7 @@ Shopkart | Online shopping
         const txtQty = document.getElementById("txtQty");
         const pid = document.getElementById("pid");
         const btnCart = document.getElementById("btnCart")
+        const btnFav = document.getElementById("btnFav")
 
         btnPlus.addEventListener("click", function () {
             let qty = parseInt(txtQty.value, 10);
@@ -88,7 +89,7 @@ Shopkart | Online shopping
                     'product_qty': qty,
                     'pid': pid.value
                 }
-                console.log(postObj);
+                // console.log(postObj);
                 fetch("/addtocart", {
                     method: 'POST',
                     Credentials: 'same-origin',
@@ -101,12 +102,37 @@ Shopkart | Online shopping
                 }).then(response => {
                     return response.json();
                 }).then(data => {
-                    console.log(data);
+                    // console.log(data);
+                    alert(data['status'])
                 })
             }
             else {
                 alert("Please Enter The Quantity");
             }
+        })
+
+        btnFav.addEventListener("click", function () {
+
+            let postObj = {
+                'pid': pid.value
+            }
+            // console.log(postObj);
+            fetch("/fav", {
+                method: 'POST',
+                Credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-with': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(postObj)
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                // console.log(data);
+                alert(data['status'])
+            })
+
         })
     }
     )
