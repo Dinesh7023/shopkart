@@ -150,24 +150,20 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-class ShopConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'shop'
-
-    def ready(self):
-        post_migrate.connect(create_superuser, sender=self)
-
-
 def create_superuser(sender, **kwargs):
+    import os
     if not os.environ.get("RENDER"):
         return
 
     from django.contrib.auth import get_user_model
     User = get_user_model()
 
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@shopkart.com",
-            password="Admin@12345"
-        )
+    user, created = User.objects.get_or_create(
+        username="admin",
+        defaults={"email": "admin@shopkart.com"},
+    )
+
+    user.set_password("Admin@12345")
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
